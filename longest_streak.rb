@@ -1,6 +1,7 @@
 require 'Octokit'
 require 'netrc'
 require 'sequel'
+require 'open-uri'
 DB = Sequel.connect('sqlite://streak.db')
 
 class Connection
@@ -79,17 +80,28 @@ list = @connection.user_list 0
 user = list.first
 my_user = User.new(user)
 my_user.print
-my_user.save
+#my_user.save
 puts user.gravatar_id
 puts user.followers
 
 #DB.run("insert into user (id, login) values('#{user.id}', '#{user.login}')")
 
 
-# @c = Connection.new
-# user = @c.user 'oblakeerickson'
-# puts user.email
+@c = Connection.new
+user = @c.user 'oblakeerickson'
+puts user.id
+puts user.location
 
+page = open("https://github.com/oblakeerickson").read
+page.index '<div class="col contrib-streak">'
+chunk = page[15400..15500]
+location = chunk.index 'days'
+streak = chunk[location-4..location-2]
+if streak[0,1] == '>'
+  streak[0] = ''
+end
+puts streak
+# puts @r
 # @c = Connection.new
 # list = @c.user_list 135
 # last = @c.last_user list
