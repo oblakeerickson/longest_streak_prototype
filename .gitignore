@@ -2,3 +2,4 @@
 .password
 .netrc
 .rspec
+*.db
