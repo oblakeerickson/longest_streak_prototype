@@ -1,5 +1,5 @@
-require 'Octokit'
-require 'netrc'
+require 'octokit'
+#require 'netrc'
 require 'sequel'
 require 'open-uri'
 DB = Sequel.connect('sqlite://streak.db')
