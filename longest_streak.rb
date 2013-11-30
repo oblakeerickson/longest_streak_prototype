@@ -2,7 +2,7 @@ require 'octokit'
 #require 'netrc'
 require 'sequel'
 require 'open-uri'
-DB = Sequel.connect('sqlite://streak.db')
+DB = Sequel.connect('sqlite://streak.db', :max_connections => 10, :pool_timeout => 10)
 
 class Connection
   def initialize
