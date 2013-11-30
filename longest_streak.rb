@@ -114,12 +114,12 @@ class Page
   
 end
 
-@connection = Connection.new
-list = @connection.user_list 0
-user = list.first
-my_user = User.new(user)
-my_user.print
-#my_user.save
+# @connection = Connection.new
+# list = @connection.user_list 0
+# user = list.first
+# my_user = User.new(user)
+# my_user.print
+# my_user.save
 
 # @c = Connection.new
 # user = @c.user 'oblakeerickson'
@@ -133,12 +133,19 @@ my_user.print
 @c = Connection.new
 last = 0
 rate_limit = 5000
+
 while rate_limit > 10 do
   list = @c.user_list last
+  threads = []
   list.each { |user|
-    my_user = User.new(user)
-    my_user.print
+    threads << Thread.new() {
+      my_user = User.new(user)
+      my_user.print
+      my_user.save
+    }
   }
+  threads.each { |t| t.join }
+
   last = @c.last_user list
   rate_limit = @c.rate_limit
   puts "last: #{last} | rate limit: #{rate_limit}"
