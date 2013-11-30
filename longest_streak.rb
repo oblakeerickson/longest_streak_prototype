@@ -79,7 +79,7 @@ end
 
 class Page
   def initialize(username)
-    page = open("https://github.com/#{username}").read
+    page = page username
     chunk = chunk(page)
     if chunk != nil
       @streak = get_streak(chunk)
@@ -93,6 +93,14 @@ class Page
   end
 
   private
+
+  def page(username)
+    begin 
+      open("https://github.com/#{username}").read
+    rescue
+      "error"
+    end
+  end
 
   def chunk(page)
     location = page.index '<div class="col contrib-streak">'
@@ -141,7 +149,7 @@ while rate_limit > 10 do
     threads << Thread.new() {
       my_user = User.new(user)
       my_user.print
-      my_user.save
+      #my_user.save
     }
   }
   threads.each { |t| t.join }
