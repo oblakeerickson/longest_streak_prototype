@@ -3,3 +3,4 @@
 .netrc
 .rspec
 *.db
+*.db-journal
