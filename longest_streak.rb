@@ -152,7 +152,7 @@ while rate_limit > 10 do
       my_user.save
     }
   }
-  #threads.each { |t| t.join }
+  threads.each { |t| t.join }
 
   last = @c.last_user list
   rate_limit = @c.rate_limit
