@@ -2,6 +2,8 @@ require 'octokit'
 #require 'netrc'
 require 'sequel'
 require 'open-uri'
+require 'json'
+
 DB = Sequel.connect('sqlite://streak.db', :max_connections => 10, :pool_timeout => 10)
 
 class Connection
@@ -31,14 +33,6 @@ class Connection
   def last_user(list)
     list.last.id
   end
-
-  # def get_all_users
-  #   while @rate_limit > 10 do 
-  #     list = user_list last
-  #     last = last_user list
-  #     @rate_limit = rate_limit
-  #   end
-  # end
 
   private
     def get_username
@@ -83,7 +77,7 @@ class Page
     chunk = chunk(page)
     if chunk != nil
       @streak = get_streak(chunk)
-    else 
+    else
       @streak = 0
     end
   end
@@ -95,7 +89,7 @@ class Page
   private
 
   def page(username)
-    begin 
+    begin
       open("https://github.com/#{username}").read
     rescue
       "error"
@@ -119,7 +113,18 @@ class Page
     end
     @streak
   end
-  
+end
+
+class Contributions
+  def initialize(username)
+    @data = calendar_data username
+  end
+  def calendar_data(username)
+    open("https://github.com/users/#{username}/contributions_calendar_data").read
+  end
+  def data
+    @data
+  end
 end
 
 # @connection = Connection.new
@@ -142,19 +147,23 @@ end
 last = 0
 rate_limit = 5000
 
-while rate_limit > 10 do
-  list = @c.user_list last
-  threads = []
-  list.each { |user|
-    threads << Thread.new() {
-      my_user = User.new(user)
-      my_user.print
-      my_user.save
-    }
-  }
-  threads.each { |t| t.join }
+contributions = Contributions.new('oblakeerickson')
+puts contributions.data
 
-  last = @c.last_user list
-  rate_limit = @c.rate_limit
-  puts "last: #{last} | rate limit: #{rate_limit}"
-end
+
+# while rate_limit > 10 do
+#   list = @c.user_list last
+#   threads = []
+#   list.each { |user|
+#     threads << Thread.new() {
+#       my_user = User.new(user)
+#       #my_user.print
+#       my_user.save
+#     }
+#   }
+#   threads.each { |t| t.join }
+
+#   last = @c.last_user list
+#   rate_limit = @c.rate_limit
+#   puts "last: #{last} | rate limit: #{rate_limit}"
+# end
