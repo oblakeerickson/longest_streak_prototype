@@ -123,7 +123,43 @@ class Contributions
     open("https://github.com/users/#{username}/contributions_calendar_data").read
   end
   def data
-    @data
+    data_string = remove_head_and_tail_brackets(@data)
+    arr = to_array(data_string)
+    sub_array(arr)
+  end
+
+  private
+
+  def to_array(data_string)
+    arr =  data_string.split('],[')
+  end
+
+  def sub_array(arr)
+    ary = Array.new
+    h = {}
+    arr.each do |a|
+      v,k = a.split(',')
+      ary << k.to_i
+    end
+    ary
+  end
+
+  def remove_head_and_tail_brackets(data_string)
+    data_string[0..1] = ''
+    length = data_string.length
+    data_string[length-2..length] = ''
+    data_string
+  end
+
+  def longest_streak(arr)
+    longest = 0
+    current = 0
+    arr.each do |a|
+      if a > 0
+        current++
+      else
+        current = 0
+      end
   end
 end
 
