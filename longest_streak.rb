@@ -216,6 +216,6 @@ while rate_limit > 10 do
   threads.each { |t| t.join }
 
   last = @c.last_user list
-  rate_limit = @c.rate_limit
-  puts "last: #{last} | rate limit: #{rate_limit}"
+  #rate_limit = @c.rate_limit
+  puts "last: #{last}"
 end
