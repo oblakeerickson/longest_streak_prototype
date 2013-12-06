@@ -49,8 +49,8 @@ class User
   def initialize(user)
     @id = user.id
     @login = user.login
-    page = Page.new(@login)
-    @streak = page.streak
+    contributions = Contributions.new(@login)
+    @streak = contributions.longest_streak
   end
   def id
     @id
@@ -62,9 +62,7 @@ class User
     @streak
   end
   def print
-    puts "id: #{id}"
-    puts "login: #{login}"
-    puts "streak: #{streak}"
+    puts "id: #{id} | login: #{login} | streak: #{streak}"
   end
   def save
     DB.run("insert into user (id, login, longest_streak) values('#{id}', '#{login}', '#{streak}')")
@@ -119,30 +117,39 @@ class Contributions
   def initialize(username)
     @data = calendar_data username
   end
-  def calendar_data(username)
-    open("https://github.com/users/#{username}/contributions_calendar_data").read
-  end
-  def data
-    data_string = remove_head_and_tail_brackets(@data)
-    arr = to_array(data_string)
-    sub_arr = sub_array(arr)
-    longest_streak(sub_arr)
+
+  def longest_streak
+    if @data != "error"
+      data_string = remove_head_and_tail_brackets @data
+      arr = to_array data_string
+      daily_contributions = get_daily_contributions arr
+      calc_longest_streak daily_contributions
+    else
+      0
+    end
   end
 
   private
+
+  def calendar_data(username)
+    begin
+      open("https://github.com/users/#{username}/contributions_calendar_data").read
+    rescue
+      "error"
+    end
+  end
 
   def to_array(data_string)
     arr =  data_string.split('],[')
   end
 
-  def sub_array(arr)
-    ary = Array.new
-    h = {}
+  def get_daily_contributions(arr)
+    daily_contributions = Array.new
     arr.each do |a|
       v,k = a.split(',')
-      ary << k.to_i
+      daily_contributions << k.to_i
     end
-    ary
+    daily_contributions
   end
 
   def remove_head_and_tail_brackets(data_string)
@@ -152,7 +159,7 @@ class Contributions
     data_string
   end
 
-  def longest_streak(arr)
+  def calc_longest_streak(arr)
     longest = 0
     current = 0
     arr.each do |a|
@@ -163,6 +170,9 @@ class Contributions
           longest = current
         end
         current = 0
+      end
+      if current > longest
+        longest = current
       end
     end
     longest
@@ -189,23 +199,23 @@ end
 last = 0
 rate_limit = 5000
 
-contributions = Contributions.new('oblakeerickson')
-puts contributions.data
+# contributions = Contributions.new('oasdasdlkjsflkjasdf')
+# puts contributions.longest_streak
 
 
-# while rate_limit > 10 do
-#   list = @c.user_list last
-#   threads = []
-#   list.each { |user|
-#     threads << Thread.new() {
-#       my_user = User.new(user)
-#       #my_user.print
-#       my_user.save
-#     }
-#   }
-#   threads.each { |t| t.join }
+while rate_limit > 10 do
+  list = @c.user_list last
+  threads = []
+  list.each { |user|
+    threads << Thread.new() {
+      my_user = User.new(user)
+      #my_user.print
+      my_user.save
+    }
+  }
+  threads.each { |t| t.join }
 
-#   last = @c.last_user list
-#   rate_limit = @c.rate_limit
-#   puts "last: #{last} | rate limit: #{rate_limit}"
-# end
+  last = @c.last_user list
+  rate_limit = @c.rate_limit
+  puts "last: #{last} | rate limit: #{rate_limit}"
+end
