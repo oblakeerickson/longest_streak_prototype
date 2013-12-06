@@ -125,7 +125,8 @@ class Contributions
   def data
     data_string = remove_head_and_tail_brackets(@data)
     arr = to_array(data_string)
-    sub_array(arr)
+    sub_arr = sub_array(arr)
+    longest_streak(sub_arr)
   end
 
   private
@@ -156,10 +157,15 @@ class Contributions
     current = 0
     arr.each do |a|
       if a > 0
-        current++
+        current = current + 1
       else
+        if current > longest
+          longest = current
+        end
         current = 0
       end
+    end
+    longest
   end
 end
 
