@@ -12,7 +12,6 @@ Currently this is just a simple command line app, but I plan on turning it into 
 * fork this project
 * clone it to your code folder
 * create .password and .username files
-* create database
 * run with `ruby longest_streak.rb`
 
 
