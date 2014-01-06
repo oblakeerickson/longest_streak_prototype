@@ -6,6 +6,16 @@ require 'json'
 
 DB = Sequel.connect('sqlite://streak.db', :max_connections => 10, :pool_timeout => 10)
 
+#for creating table automatically
+
+DB.create_table?(:user) do
+  primary_key :id
+  String :login
+  Numeric :longest_streak
+end
+
+
+
 class Connection
   def initialize
     username = get_username
@@ -209,7 +219,7 @@ while rate_limit > 10 do
   list.each { |user|
     threads << Thread.new() {
       my_user = User.new(user)
-      #my_user.print
+      my_user.print
       my_user.save
     }
   }
