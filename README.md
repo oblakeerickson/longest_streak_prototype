@@ -1,6 +1,8 @@
 Longest Streak
 ==============
 
+**NOTE:** This project has been moved to: https://github.com/oblakeerickson/longest_streak
+
 Longest Streak uses the GitHub API to figure out who has the longest streak on GitHub.
 
 ### Implementation
